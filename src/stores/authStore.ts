@@ -1,5 +1,5 @@
-import { WalletInfo, isWalletInfoInjected } from "@tonconnect/sdk";
-import create from "zustand";
+import { WalletInfo } from "@tonconnect/sdk";
+import { create } from "zustand";
 
 type WalletsListState =
   | { state: "loading" }
