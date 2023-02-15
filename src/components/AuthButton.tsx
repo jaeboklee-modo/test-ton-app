@@ -1,30 +1,22 @@
 import { DownOutlined } from "@ant-design/icons";
 import { isWalletInfoInjected, WalletInfoRemote } from "@tonconnect/sdk";
 import { Button, Dropdown, Menu, Modal, notification, Space } from "antd";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import QRCode from "react-qr-code";
 import { useTonWallet } from "src/hooks/useTonWallet";
 import { useTonWalletConnectionError } from "src/hooks/useTonWalletConnectionError";
 import { useFriendlyAddress } from "../hooks/useFriendlyAddress";
-import { addReturnStrategy, connector } from "../services/Connector";
-import useAuthStore from "../stores/authStore";
-import { TonProofDemoApi } from "../services/TonProofApiService";
+import { addReturnStrategy } from "../services/Connector";
+import { useAuthStore } from "../stores/authStore";
 import { isMobile, openLink } from "@/utils/window";
-
-const menu = (
-  <Menu
-    onClick={() => connector.disconnect()}
-    items={[
-      {
-        label: "Disconnect",
-        key: "1",
-      },
-    ]}
-  />
-);
+import ConnectorContext from "./ConnectorContext";
+import useTonProofDemoApi from "../hooks/useTonProofApi";
 
 export function AuthButton() {
   const [modalUniversalLink, setModalUniversalLink] = useState("");
+  const connector = useContext(ConnectorContext);
+  // TODO Fix it
+  // const tonProof = useTonProofDemoApi();
 
   const wallet = useTonWallet();
 
@@ -53,7 +45,7 @@ export function AuthButton() {
       return;
     }
 
-    if (walletsList.contents.embeddedWallet) {
+    if (walletsList.contents.embeddedWallet && connector) {
       connector.connect(
         { jsBridgeKey: walletsList.contents.embeddedWallet.aboutUrl },
         { tonProof: authPayload.contents.tonProofPayload }
@@ -70,28 +62,48 @@ export function AuthButton() {
 
   useEffect(() => {
     const fetchAuthPayload = async () => {
-      const payload = await TonProofDemoApi.generatePayload();
+      // TODO
+      // const payload = await tonProof.generatePayload();
+      const payload = "temp";
       setAuthPayload({ tonProofPayload: payload });
     };
     fetchAuthPayload();
   }, [setAuthPayload]);
 
   useEffect(() => {
-    const fetchWalletsList = async () => {
-      const walletsList = await connector.getWallets();
-      const embeddedWallet = walletsList
-        .filter(isWalletInfoInjected)
-        .find((wallet) => wallet.embedded);
-      setWalletsList(walletsList, embeddedWallet);
-    };
-    fetchWalletsList();
+    if (connector) {
+      const fetchWalletsList = async () => {
+        const walletsList = await connector.getWallets();
+        const embeddedWallet = walletsList
+          .filter(isWalletInfoInjected)
+          .find((wallet) => wallet.embedded);
+        setWalletsList(walletsList, embeddedWallet);
+      };
+      fetchWalletsList();
+    }
   }, [setWalletsList]);
+
+  if (!connector) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <>
       <div className="auth-button">
         {wallet ? (
-          <Dropdown overlay={menu}>
+          <Dropdown
+            overlay={
+              <Menu
+                onClick={() => connector.disconnect()}
+                items={[
+                  {
+                    label: "Disconnect",
+                    key: "1",
+                  },
+                ]}
+              />
+            }
+          >
             <Button shape="round" type="primary">
               <Space>
                 {address}
@@ -107,7 +119,7 @@ export function AuthButton() {
       </div>
       <Modal
         title="Connect to Tonkeeper"
-        visible={!!modalUniversalLink}
+        open={!!modalUniversalLink}
         onOk={() => setModalUniversalLink("")}
         onCancel={() => setModalUniversalLink("")}
       >

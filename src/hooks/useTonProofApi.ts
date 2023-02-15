@@ -1,7 +1,8 @@
 import { TonProofItemReplySuccess } from "@tonconnect/protocol";
-import { Account } from "@tonconnect/sdk";
+import { Account, TonConnect } from "@tonconnect/sdk";
+import { useContext } from "react";
 import "../../patch-local-storage-for-github-pages";
-import { connector } from "./Connector";
+import ConnectorContext from "../components/ConnectorContext";
 
 class TonProofDemoApiService {
   localStorageKey = "demo-api-access-token";
@@ -10,10 +11,13 @@ class TonProofDemoApiService {
 
   accessToken: string | null = null;
 
-  constructor() {
+  connector: TonConnect;
+
+  constructor(connector: TonConnect) {
+    this.connector = connector;
     this.accessToken = localStorage.getItem(this.localStorageKey);
 
-    connector.onStatusChange((wallet) => {
+    this.connector.onStatusChange((wallet) => {
       if (!wallet) {
         this.reset();
         return;
@@ -31,7 +35,7 @@ class TonProofDemoApiService {
       }
 
       if (!this.accessToken) {
-        connector.disconnect();
+        this.connector.disconnect();
       }
     });
   }
@@ -92,4 +96,15 @@ class TonProofDemoApiService {
   }
 }
 
-export const TonProofDemoApi = new TonProofDemoApiService();
+function useTonProofDemoApi() {
+  const connector = useContext(ConnectorContext);
+  console.log("Connector is not initialized", connector);
+
+  if (!connector) {
+    throw Error();
+  }
+
+  return new TonProofDemoApiService(connector);
+}
+
+export default useTonProofDemoApi;

@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import useSWR from "swr";
 import { fetcher } from "../api/fetcher";
 import { Container } from "./style";
+import ConnectorContext from "@/src/components/ConnectorContext";
 
 type Group = {
   id: string;

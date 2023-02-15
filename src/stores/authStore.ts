@@ -24,18 +24,18 @@ type AuthStoreActions = {
   setAuthPayload: (payload: { tonProofPayload: string }) => void;
 };
 
-const useAuthStore = create<AuthStoreState & AuthStoreActions>((set) => ({
-  walletsList: { state: "loading" },
-  authPayload: { state: "loading" },
-  setAuthPayload: (payload) =>
-    set({ authPayload: { state: "done", contents: payload } }),
-  setWalletsList: (walletsList, embeddedWallet) =>
-    set({
-      walletsList: {
-        state: "done",
-        contents: { walletsList, embeddedWallet },
-      },
-    }),
-}));
-
-export default useAuthStore;
+export const useAuthStore = create<AuthStoreState & AuthStoreActions>(
+  (set) => ({
+    walletsList: { state: "loading" },
+    authPayload: { state: "loading" },
+    setAuthPayload: (payload) =>
+      set({ authPayload: { state: "done", contents: payload } }),
+    setWalletsList: (walletsList, embeddedWallet) =>
+      set({
+        walletsList: {
+          state: "done",
+          contents: { walletsList, embeddedWallet },
+        },
+      }),
+  })
+);

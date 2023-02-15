@@ -9,14 +9,8 @@ import {
 } from "@tonconnect/sdk";
 import { notification } from "antd";
 
-const dappMetadata = {
-  manifestUrl:
-    "https://ton-connect.github.io/demo-dapp-with-backend/tonconnect-manifest.json",
-};
-
-export const connector = new TonConnect();
-
 export async function sendTransaction(
+  connector: TonConnect,
   tx: SendTransactionRequest,
   wallet: WalletInfo
 ): Promise<{ boc: string }> {

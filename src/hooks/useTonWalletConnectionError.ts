@@ -1,8 +1,14 @@
 import { UserRejectsError } from "@tonconnect/sdk";
-import { useCallback, useEffect } from "react";
-import { connector } from "../services/Connector";
+import { useCallback, useEffect, useContext } from "react";
+import ConnectorContext from "../components/ConnectorContext";
 
 export function useTonWalletConnectionError(callback: () => void) {
+  const connector = useContext(ConnectorContext);
+
+  if (!connector) {
+    throw Error();
+  }
+
   const errorsHandler = useCallback(
     (error: unknown) => {
       if (typeof error === "object" && error instanceof UserRejectsError) {
@@ -16,6 +22,6 @@ export function useTonWalletConnectionError(callback: () => void) {
 
   useEffect(
     () => connector.onStatusChange(emptyCallback, errorsHandler),
-    [emptyCallback, errorsHandler]
+    [connector, emptyCallback, errorsHandler]
   );
 }
