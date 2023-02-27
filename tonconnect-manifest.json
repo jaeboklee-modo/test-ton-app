@@ -1,5 +1,7 @@
 {
   "url": "https://split-backend.be0721h60et94.ap-northeast-2.cs.amazonlightsail.com/",
   "name": "my app",
-  "iconUrl": "https://ton-connect.github.io/demo-dapp-with-backend/apple-touch-icon.png"
+  "iconUrl": "https://ton-connect.github.io/demo-dapp-with-backend/apple-touch-icon.png",
+  "termsOfUseUrl": "https://ton-connect.github.io/demo-dapp-with-backend/terms-of-use.txt",
+  "privacyPolicyUrl": "https://ton-connect.github.io/demo-dapp-with-backend/privacy-policy.txt"
 }
